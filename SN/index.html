@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <title>myFirst SN Generator V1</title>
+    <script>
+        function calculateLuhnCheckDigit(serial) {
+            let sum = 0;
+            let alternate = true;
+            for (let i = serial.length - 1; i >= 0; i--) {
+                let num = parseInt(serial[i], 36);
+                if (isNaN(num)) continue;
+                if (alternate) {
+                    num *= 2;
+                    if (num > 9) {
+                        num = (num % 10) + 1;
+                    }
+                }
+                sum += num;
+                alternate = !alternate;
+            }
+
+            let checkDigit = (sum * 9) % 10;
+            return checkDigit;
+        }
+
+        function formatDate() {
+            let date = new Date();
+            let YY = date.getFullYear().toString().slice(-2);
+            let MM = (date.getMonth() + 1).toString().padStart(2, '0');
+            let DD = date.getDate().toString().padStart(2, '0');
+            let hh = date.getHours().toString().padStart(2, '0');
+            let mm = date.getMinutes().toString().padStart(2, '0');
+            let ss = date.getSeconds().toString().padStart(2, '0');
+            return `${YY}${MM}${DD}-${hh}${mm}${ss}`;
+        }
+
+        function generateSerial() {
+            let ean = document.getElementById("ean").value;
+            let factoryCode = document.getElementById("factoryCode").value.toUpperCase();
+            let year = document.getElementById("year").value.toUpperCase();
+            let month = document.getElementById("month").value.toUpperCase();
+            let batch = document.getElementById("batch").value.toUpperCase();
+            let quantity = parseInt(document.getElementById("quantity").value, 10);
+            let generator = document.getElementById("generator").value.toUpperCase();
+
+            if(!ean || !factoryCode || !year || !month || !batch || !quantity || !generator) {
+                alert("所有字段都必须填写!");
+                return;
+            }
+
+            if(quantity > 46656) {
+                alert("生产数量不能超过46656!");
+                return;
+            }
+
+            let serials = [];
+            for (let i = 0; i < quantity; i++) {
+                let num = i.toString(36).toUpperCase().padStart(3, '0');
+                let serialNumber = `${ean}${factoryCode}${year}${month}${batch}${num}`;
+                let checkDigit = calculateLuhnCheckDigit(serialNumber);
+                let fullSerialNumber = serialNumber + checkDigit;
+                // serials.push(`${fullSerialNumber},${generator},${formatDate()}`);
+                serials.push(fullSerialNumber);
+            }
+
+            let dateTime = formatDate();
+            let datePart = dateTime.split('-')[0];
+            let timePart = dateTime.split('-')[1];
+            let csvContent = "data:text/csv;charset=utf-8," + serials.join("\n");
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `myFirst_SN_${generator}_${datePart}_${timePart}_${batch}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert("序列号已生成");
+            clearFields();
+        }
+
+        function clearFields() {
+            document.getElementById("ean").value = "";
+            document.getElementById("factoryCode").value = "";
+            document.getElementById("year").value = "";
+            document.getElementById("month").value = "";
+            document.getElementById("batch").value = "";
+            document.getElementById("quantity").value = "";
+            document.getElementById("generator").value = "";
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-8">
+        <h1 class="text-2xl font-semibold mb-6 text-center">myFirst Product Serial Number Generator</h1>
+        <div class="mb-4">
+            <label for="ean" class="block text-sm font-semibold text-gray-600">EAN尾号（3位数字）：</label>
+            <input type="text" id="ean" maxlength="3" pattern="\d{3}" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <div class="mb-4">
+            <label for="factoryCode" class="block text-sm font-semibold text-gray-600">工厂代号（1个字母）：</label>
+            <input type="text" id="factoryCode" maxlength="1" pattern="[A-Za-z]" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <div class="mb-4">
+            <label for="year" class="block text-sm font-semibold text-gray-600">生产年份（1个数字或字母）：</label>
+            <input type="text" id="year" maxlength="1" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <div class="mb-4">
+            <label for="month" class="block text-sm font-semibold text-gray-600">生产月份（1个数字或字母）：</label>
+            <input type="text" id="month" maxlength="1" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <div class="mb-4">
+            <label for="batch" class="block text-sm font-semibold text-gray-600">批次（1个数字或字母）：</label>
+            <input type="text" id="batch" maxlength="1" pattern="[A-Za-z]" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        
+        <div class="mb-4">
+            <label for="quantity" class="block text-sm font-semibold text-gray-600">生产数量：(最大数值46656)</label>
+            <input type="number" id="quantity" min="1" max="46656" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <div class="mb-4">
+            <label for="generator" class="block text-sm font-semibold text-gray-600">执行人：(2个字母)</label>
+            <input type="text" id="generator" class="mt-1 p-2 w-full border rounded-md" required>
+        </div>
+        <button onclick="generateSerial()" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">生成序列号并下载CSV</button>
+    </div>
+</body>
+</html>

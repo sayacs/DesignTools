@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailwind Dark Theme with Header and Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      };
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #1a202c;
+        color: #e2e8f0;
+      }
+    </style>
+  </head>
+  <body class="p-6">
+    <!-- Header -->
+    <header class="mb-8 text-center">
+      <div class="text-4xl text-yellow-400">
+        <i class="fas fa-star"></i>
+      </div>
+      <h1 class="mt-2 text-2xl font-bold">My Design Tools</h1>
+    </header>
+
+    <!-- Cards -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Card 1 -->
+        <a href="ITF/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-barcode text-3xl text-yellow-400"></i>
+        <h2 class="text-lg font-semibold">ITF-14 Generator</h2>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="SN/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-hashtag text-3xl text-pink-400"></i>
+        <h2 class="text-lg font-semibold">SN Generator</h2>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="OuterCarton/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-box text-3xl text-green-400"></i>
+        <h2 class="text-lg font-semibold">Outer Carton</h2>
+      </a>
+
+      <!-- Card 4 -->
+      <a href="InnerCarton/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-boxes text-3xl text-blue-400"></i>
+        <h2 class="text-lg font-semibold">Inner Carton Generator</h2>
+      </a>
+
+      <!-- Card 5 -->
+      <a href="CartonLabel/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-note-sticky text-3xl text-blue-400"></i>
+        <h2 class="text-lg font-semibold">Carton Label</h2>
+      </a>
+
+      <!-- Card 6 -->
+      <a href="CartonCalculator/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-calculator text-3xl text-pink-400"></i>
+        <h2 class="text-lg font-semibold">Carton Calculator</h2>
+      </a>
+
+      <!-- Card 7 -->
+      <a href="Email/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-envelope text-3xl text-purple-400"></i>
+        <h2 class="text-lg font-semibold">Email Signature</h2>
+      </a>
+
+      <!-- Card 8 -->
+      <a href="QR/" target="_blank" class="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 h-48 shadow-md flex flex-col justify-between cursor-pointer">
+        <i class="fas fa-qrcode text-3xl text-green-400"></i>
+        <h2 class="text-lg font-semibold">QR Code</h2>
+      </a>
+
+      
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-sm text-gray-500">
+      © 2025 Chen Shuo. Released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-300">MIT License</a>.
+    </footer>
+
+  </body>
+</html>

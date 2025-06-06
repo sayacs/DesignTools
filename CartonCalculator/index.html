@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carton Size Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      };
+    </script>
+    <style>
+      body {
+        background-color: #1a202c;
+        color: #e2e8f0;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-lg">
+      <h1 class="text-2xl font-bold mb-6 text-center">Carton Size Calculator</h1>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block mb-1">Inner Length (mm)</label>
+          <input id="length" type="number" class="w-full p-2 rounded bg-gray-700 border border-gray-600" />
+        </div>
+        <div>
+          <label class="block mb-1">Inner Width (mm)</label>
+          <input id="width" type="number" class="w-full p-2 rounded bg-gray-700 border border-gray-600" />
+        </div>
+        <div>
+          <label class="block mb-1">Inner Height (mm)</label>
+          <input id="height" type="number" class="w-full p-2 rounded bg-gray-700 border border-gray-600" />
+        </div>
+        <div>
+          <label class="block mb-1">Material</label>
+          <select id="material" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+            <option value="">Select Material</option>
+            <option value="k3k">K3K</option>
+            <option value="h737h">H737H</option>
+          </select>
+        </div>
+        <button onclick="calculateCartonSize()" class="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-semibold rounded">
+          Calculate
+        </button>
+        <div id="result" class="mt-4 text-center text-lg font-medium text-green-400"></div>
+      </div>
+    </div>
+
+    <script>
+      function calculateCartonSize() {
+        const length = parseFloat(document.getElementById('length').value);
+        const width = parseFloat(document.getElementById('width').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const material = document.getElementById('material').value;
+
+        if (!length || !width || !height || !material) {
+          document.getElementById('result').textContent = "Please fill in all fields.";
+          return;
+        }
+
+        let thickness = 0;
+        if (material === 'k3k') thickness = 5;
+        else if (material === 'h737h') thickness = 8;
+
+        const outerL = length + thickness * 2;
+        const outerW = width + thickness * 2;
+        const outerH = height + thickness * 2;
+
+        document.getElementById('result').textContent =
+          `Outer Size: ${outerL} × ${outerW} × ${outerH} mm`;
+      }
+    </script>
+  </body>
+</html>

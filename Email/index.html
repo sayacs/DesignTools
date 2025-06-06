@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Signature Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-black p-8 max-w-3xl mx-auto font-sans">
+  <h2 class="text-xl font-bold mb-4">Email Signature Generator</h2>
+  <div class="space-y-4">
+    <div>
+      <label class="block mb-1">Name</label>
+      <input type="text" id="name" class="w-full p-2 border border-gray-700 rounded" placeholder="Your Name">
+    </div>
+    <div>
+      <label class="block mb-1">Title</label>
+      <input type="text" id="title" class="w-full p-2 border border-gray-700 rounded" placeholder="Your Job Title">
+    </div>
+    <div>
+      <label class="block mb-1">Phone</label>
+      <input type="text" id="phone" class="w-full p-2 border border-gray-700 rounded" placeholder="e.g. +65 12345678">
+    </div>
+    <div>
+      <label class="block mb-1">Address</label>
+      <select id="address" class="w-full p-2 border border-gray-700 rounded">
+        <option value="" disabled selected>No address</option>
+        <option 
+          data-country="jp"
+          data-company="myFirst Japan Ltd."
+          data-address="231-0027, 2-4-2 Ougimachi, Naka-ku, Yokohama-shi,<br>Kanagawa Prefecture, Keihin Building 602"
+        >Japan</option>
+        <option 
+          data-country="my"
+          data-company="myFirst Malaysia Sdn. Bhd."
+          data-address="57, Jalan Setia Tropika 1/15,<br>81200 Johor Bahru, Johor"
+        >Malaysia</option>
+        <option 
+          data-country="sg"
+          data-company="myFirst Tech Pte. Ltd."
+          data-address="31 Woodlands Close, Woodlands Horizon #01-22,<br>Singapore 737855"
+        >Singapore</option>
+        <option 
+          data-country="cn"
+          data-company="myFirst Shenzhen Ltd."
+          data-address="No. 19 Fada Road, Yangmei Community, Bantian Street,<br>Longgang District, Shenzhen"
+        >Shenzhen</option>
+        <option 
+          data-country="vn"
+          data-company="myFirst Vietnam Ltd."
+          data-address="17 Nui Truc alley, Nui Truc square building,<br>Kim Ma ward, Ba Dinh district, Ha Noi"
+        >Vietnam</option>
+      </select>
+    </div>
+    <div class="space-x-2">
+      <button onclick="generateSignature()" class="text-white bg-purple-700 hover:bg-purple-500 px-4 py-2 rounded">Generate Signature</button>
+      <button onclick="copyToClipboard()" class="text-white bg-green-600 hover:bg-green-500 px-4 py-2 rounded">Copy HTML</button>
+    </div>
+  </div>
+
+  <div id="signaturePreview" class="mt-8 border border-gray-700 p-4"></div>
+
+  <script>
+    const socialByCountry = {
+      sg: {
+        facebook: "https://www.facebook.com/myfirst.tech",
+        instagram: "https://www.instagram.com/myfirst.tech/",
+        youtube: "https://www.youtube.com/c/myFirstTech",
+        linkedin: "https://www.linkedin.com/company/myfirst/",
+        tiktok: "https://www.tiktok.com/@myfirst.tech.my"
+      },
+      jp: {
+        facebook: "https://www.facebook.com/myfirstjapan",
+        instagram: "https://www.instagram.com/myfirst.jp/",
+        youtube: "https://www.youtube.com/@myFirstJapan",
+        linkedin: "https://www.linkedin.com/company/myfirstjapan",
+        tiktok: "https://www.tiktok.com/@myfirstjapan"
+      },
+      my: {
+        facebook: "https://www.facebook.com/myfirstmalaysia",
+        instagram: "https://www.instagram.com/myfirst.my/",
+        youtube: "https://www.youtube.com/@myFirstMalaysia",
+        linkedin: "https://www.linkedin.com/company/myfirstmalaysia",
+        tiktok: "https://www.tiktok.com/@myfirstmalaysia"
+      },
+      cn: {
+        facebook: "#",
+        instagram: "#",
+        youtube: "#",
+        linkedin: "#",
+        tiktok: "#"
+      },
+      vn: {
+        facebook: "#",
+        instagram: "#",
+        youtube: "#",
+        linkedin: "#",
+        tiktok: "#"
+      }
+    };
+
+    function generateSignature() {
+      const name = document.getElementById('name').value;
+      const title = document.getElementById('title').value;
+      const phone = document.getElementById('phone').value.trim();
+      const addressSelect = document.getElementById('address');
+      const company = addressSelect.options[addressSelect.selectedIndex]?.getAttribute('data-company') || "";
+      const address = addressSelect.options[addressSelect.selectedIndex]?.getAttribute('data-address') || "";
+      const countryCode = addressSelect.options[addressSelect.selectedIndex]?.getAttribute('data-country') || 'sg';
+      const socials = socialByCountry[countryCode] || socialByCountry["sg"];
+      const website = "https://myfirst.tech";
+
+      const html = `
+<table cellpadding="0" cellspacing="0" style="width:560px; font-family:Arial, sans-serif; font-size:14px; color:#000000;">
+  <tr>
+    <td style="width:100px; vertical-align:top;">
+      <img src="https://myfirst.tech/media/img/logo.png" width="80" alt="Logo" />
+    </td>
+    <td rowspan="2" style="padding-left:20px; vertical-align:top;">
+      <div style="margin-bottom:12px;">
+        <strong style="font-size:18px;">${name}</strong><br/>
+        <span style="font-size:14px;">${title}</span><br/>
+        ${phone ? `<div style="margin:4px 0;">${phone}</div>` : ''}
+        ${company ? `<div style="margin-top:6px;"><strong>${company}</strong></div>` : ''}
+        ${address ? `<div>${address}</div>` : ''}
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:13px; font-style:italic; margin-bottom:6px;">Leading Tech For Next Generation</div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <a href="${website}"><img src="https://myfirst.tech/media/img/ico-web.png" width="24" alt="Website" /></a>
+          <a href="${socials.facebook}"><img src="https://myfirst.tech/media/img/ico-fb.png" width="24" alt="Facebook" /></a>
+          <a href="${socials.youtube}"><img src="https://myfirst.tech/media/img/ico-yt.png" width="24" alt="YouTube" /></a>
+          <a href="${socials.instagram}"><img src="https://myfirst.tech/media/img/ico-ig.png" width="24" alt="Instagram" /></a>
+          <a href="${socials.linkedin}"><img src="https://myfirst.tech/media/img/ico-in.png" width="24" alt="LinkedIn" /></a>
+          <a href="${socials.tiktok}"><img src="https://myfirst.tech/media/img/ico-tk.png" width="24" alt="TikTok" /></a>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align:bottom; height:80px;">
+      <img src="https://myfirst.tech/media/img/mino1.png" width="80" height="80" alt="Mascot" />
+    </td>
+  </tr>
+</table>
+`;
+
+      document.getElementById('signaturePreview').innerHTML = html;
+    }
+
+    function copyToClipboard() {
+      const temp = document.createElement('textarea');
+      temp.value = document.getElementById('signaturePreview').innerHTML;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      alert('Signature HTML copied to clipboard!');
+    }
+  </script>
+</body>
+</html>
