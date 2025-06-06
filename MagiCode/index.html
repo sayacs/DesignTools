@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freehand Line to Circle Animation</title>
+  <style>
+    body {
+      background-color: black;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      gap: 20px;
+    }
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    canvas {
+      border: 1px solid white;
+      border-radius: 10px;
+      background-color: black;
+    }
+    #animationCanvas {
+      position: relative;
+      width: 348px;
+      height: 442px;
+      border: 1px solid white;
+      border-radius: 50px;
+    }
+    #avatar {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      background: white;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: white;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: gray;
+    }
+  </style>
+</head>
+<body>
+  <!-- Left Side: Drawing Canvas -->
+  <div class="canvas-container">
+    <canvas id="drawingCanvas" width="300" height="300"></canvas>
+    <button id="clearButton">Clear</button>
+  </div>
+
+  <!-- Right Side: Animation Canvas -->
+  <div class="canvas-container">
+    <div id="animationCanvas">
+      <canvas id="circleCanvas" width="348" height="442"></canvas>
+      <div id="avatar"></div>
+    </div>
+    <button id="generateButton">Generate</button>
+  </div>
+
+  <script>
+    // Variables for Drawing Canvas
+    const drawingCanvas = document.getElementById('drawingCanvas');
+    const drawingCtx = drawingCanvas.getContext('2d');
+    let isDrawing = false;
+    let points = [];
+
+    // Setup Drawing Canvas
+    drawingCanvas.addEventListener('mousedown', () => {
+      isDrawing = true;
+      points = [];
+    });
+
+    drawingCanvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+
+    drawingCanvas.addEventListener('mousemove', (event) => {
+      if (!isDrawing) return;
+      const rect = drawingCanvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      points.push({ x, y });
+      redrawDrawingCanvas();
+    });
+
+    function redrawDrawingCanvas() {
+      drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+      drawingCtx.beginPath();
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        if (i === 0) {
+          drawingCtx.moveTo(point.x, point.y);
+        } else {
+          drawingCtx.lineTo(point.x, point.y);
+        }
+      }
+      drawingCtx.strokeStyle = 'white';
+      drawingCtx.lineWidth = 2;
+      drawingCtx.stroke();
+    }
+
+    document.getElementById('clearButton').addEventListener('click', () => {
+      points = [];
+      redrawDrawingCanvas();
+    });
+
+    // Convert Freehand Line to Animation Data
+    function convertLineToAnimation() {
+      const sizes = [];
+      const durations = [];
+      const totalDuration = 3000; // 3 seconds total animation time
+      const segmentDuration = totalDuration / points.length;
+
+      for (let i = 1; i < points.length; i++) {
+        const prevPoint = points[i - 1];
+        const currPoint = points[i];
+
+        // Calculate size (Y-axis: bottom-to-top -> 0-255)
+        const size = Math.min(255, Math.max(0, 255 - currPoint.y / 300 * 255));
+        sizes.push(size);
+
+        // Use equal duration for each segment
+        durations.push(segmentDuration);
+      }
+
+      return { sizes, durations };
+    }
+
+    // Variables for Animation Canvas
+    const circleCanvas = document.getElementById('circleCanvas');
+    const circleCtx = circleCanvas.getContext('2d');
+    let animationSizes = [128];
+    let animationDurations = [100];
+    let animationIndex = 0;
+
+    function animateCircle() {
+      const startSize = animationSizes[animationIndex];
+      const endSize = animationSizes[(animationIndex + 1) % animationSizes.length];
+      const duration = animationDurations[animationIndex % animationDurations.length];
+      const startTime = performance.now();
+
+      function drawFrame(timestamp) {
+        const elapsedTime = timestamp - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        const currentSize = startSize + (endSize - startSize) * progress;
+
+        // Clear the canvas
+        circleCtx.clearRect(0, 0, circleCanvas.width, circleCanvas.height);
+
+        // Determine stroke width and color
+        const borderWidth = 10 + (20 - 10) * ((currentSize - 128) / (340 - 128)); // Range: 10px to 20px
+        const redIntensity = Math.min(255, Math.max(0, 255 * ((currentSize - 128) / (340 - 128))));
+        const blueIntensity = 255 - redIntensity; // Blue decreases as the circle grows
+        const color = `rgb(${redIntensity}, 0, ${blueIntensity})`;
+
+        // Draw the circle
+        circleCtx.beginPath();
+        circleCtx.arc(174, 221, currentSize / 2, 0, Math.PI * 2);
+        circleCtx.lineWidth = borderWidth;
+        circleCtx.strokeStyle = color;
+        circleCtx.stroke();
+
+        if (progress < 1) {
+          requestAnimationFrame(drawFrame);
+        } else {
+          // Update animation index, wrapping around to 0 when reaching the end
+          animationIndex = (animationIndex + 1) % animationSizes.length;
+          animateCircle();
+        }
+      }
+
+      requestAnimationFrame(drawFrame);
+    }
+
+    // Generate Button Event
+    document.getElementById('generateButton').addEventListener('click', () => {
+      const animationData = convertLineToAnimation();
+      animationSizes = animationData.sizes.map((size) => Math.max(128, size / 255 * (340 - 128) + 128));
+      animationDurations = animationData.durations;
+      animationIndex = 0;
+      animateCircle();
+    });
+  </script>
+</body>
+</html>

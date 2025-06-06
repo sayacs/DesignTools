@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock - Food Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-gray-300 flex flex-col justify-center items-center h-screen w-screen text-center font-mono p-4">
+    
+    <!-- 第一行：Nasi Lemak（左侧），Sushi / Kimchi & Pho / Pad Thai（右侧上下排列） -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4">
+        <!-- Nasi Lemak 时间（左侧独占） -->
+        <div class="p-4 bg-gray-800 rounded-lg flex flex-col justify-center items-center">
+            <div class="text-green-400 text-[clamp(2vw,3vh,2rem)] md:text-[clamp(2vw,4vh,3rem)]">
+                SG MY SZ <span id="SG-date" class="text-purple-400">Feb 27</span>
+            </div>
+            <div id="SG-time" class="font-bold text-[clamp(4vw,6vh,5rem)] md:text-[clamp(5vw,10vh,8rem)]">
+                00:00 AM
+            </div>
+        </div>
+
+        <!-- 右侧：Sushi / Kimchi & Pho / Pad Thai -->
+        <div class="flex flex-col gap-4">
+            <div class="p-4 bg-gray-800 rounded-lg">
+                <div class="text-green-400 text-[clamp(2vw,3vh,2rem)]">
+                    JP KR <span id="JP-KR-date" class="text-purple-400">Feb 27</span>
+                </div>
+                <div id="JP-KR-time" class="font-bold text-[clamp(4vw,6vh,5rem)]">00:00 AM</div>
+            </div>
+            <div class="p-4 bg-gray-800 rounded-lg">
+                <div class="text-green-400 text-[clamp(2vw,3vh,2rem)]">
+                    VN TH <span id="VN-TH-date" class="text-purple-400">Feb 27</span>
+                </div>
+                <div id="VN-TH-time" class="font-bold text-[clamp(4vw,6vh,5rem)]">00:00 AM</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二行：Paella（西班牙） & Burger（美国） -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 mt-4">
+        <div class="p-4 bg-gray-800 rounded-lg">
+            <div class="text-green-400 text-[clamp(2vw,3vh,2rem)]">
+                ES <span id="ES-date" class="text-purple-400">Feb 27</span>
+            </div>
+            <div id="ES-time" class="font-bold text-[clamp(4vw,6vh,5rem)]">00:00 AM</div>
+        </div>
+        <div class="p-4 bg-gray-800 rounded-lg">
+            <div class="text-green-400 text-[clamp(2vw,3vh,2rem)]">
+                PST <span id="US-date" class="text-purple-400">Feb 27</span>
+            </div>
+            <div id="US-time" class="font-bold text-[clamp(4vw,6vh,5rem)]">00:00 AM</div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const timeZones = {
+                "SG": { name: "Nasi Lemak", tz: "Asia/Singapore" },
+                "JP-KR": { name: "Sushi / Kimchi", tz: "Asia/Tokyo" }, // 东京和首尔同一时区
+                "VN-TH": { name: "Pho / Pad Thai", tz: "Asia/Bangkok" }, // 曼谷和河内同一时区
+                "ES": { name: "Paella", tz: "Europe/Madrid" },
+                "US": { name: "Burger", tz: "America/Los_Angeles" } // 洛杉矶会自动适配 PST/PDT
+            };
+
+            Object.keys(timeZones).forEach(key => {
+                const tz = timeZones[key];
+
+                // 获取指定时区的当前时间
+                const localTime = new Date().toLocaleString("en-US", { 
+                    timeZone: tz.tz,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true
+                });
+
+                // 获取指定时区的当前日期
+                const localDate = new Date().toLocaleString("en-US", { 
+                    timeZone: tz.tz,
+                    month: "short",
+                    day: "numeric"
+                });
+
+                // 更新 HTML
+                document.getElementById(`${key}-time`).textContent = localTime;
+                document.getElementById(`${key}-date`).textContent = localDate;
+            });
+        }
+
+        setInterval(updateClock, 60000); // 每分钟更新一次
+        updateClock();
+    </script>
+</body>
+</html>
